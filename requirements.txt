@@ -3,3 +3,6 @@ torch
 torchvision
 matplotlib
 pandas
+gdown
+seaborn
+torchmetrics
