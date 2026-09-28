@@ -1,15 +1,16 @@
-from torch.utils.data import Dataset
-import torch
 import os
+
 import numpy as np
-from PIL import Image
 import pandas as pd
+import torch
+from PIL import Image
+from torch.utils.data import Dataset
 from torchvision.transforms import v2
 
 generator = torch.Generator().manual_seed(42)
 
-IMAGES_PATH = "C:/python/torch_projects/src/object_detection/head_localization/images/"
-ANNOTATIONS = "C:/python/torch_projects/src/object_detection/head_localization/annotations.csv"
+IMAGES_PATH = "C:/python/torch_projects/src/object_detection/head_localization/data/images/"
+ANNOTATIONS = "C:/python/torch_projects/src/object_detection/head_localization/data/annotations.csv"
 
 class AnimalDataset(Dataset):
     
@@ -32,7 +33,7 @@ class AnimalDataset(Dataset):
         ymin = row["ymin"]
         xmax = row["xmax"]
         ymax = row["ymax"]
-        im = Image.open(self.images_path+filename).resize((224,224))
+        im = Image.open(self.images_path+filename).convert("RGB").resize((224,224))
         x = self.transform(im)
         y =  torch.tensor([xmin, ymin, xmax, ymax], dtype=torch.float32)
         
@@ -42,5 +43,5 @@ dataset = AnimalDataset(IMAGES_PATH, ANNOTATIONS)
 train_length = int(round((len(dataset)*0.8)))
 test_length = len(dataset) - train_length
 lengths = [train_length, test_length]
-train_dataset, validation_dataset = torch.utils.data.random_split(dataset, lengths)
+train_dataset, validation_dataset = torch.utils.data.random_split(dataset, lengths, generator=generator)
 
